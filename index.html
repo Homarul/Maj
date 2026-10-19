@@ -131,6 +131,45 @@
     color:var(--ink-soft);
   }
 
+  /* countdown */
+  .countdown{
+    display:flex;
+    justify-content:center;
+    margin:34px 0 0;
+  }
+  .countdown .unit{
+    min-width:62px;
+    padding:0 clamp(10px, 3.5vw, 20px);
+  }
+  .countdown .unit + .unit{
+    border-left:1px solid var(--gold-faint);
+  }
+  .countdown .n{
+    display:block;
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600;
+    font-size:clamp(2rem, 9vw, 2.7rem);
+    line-height:1;
+    color:var(--gold);
+    font-feature-settings:"lnum" 1, "tnum" 1;
+    font-variant-numeric:lining-nums tabular-nums;
+  }
+  .countdown .l{
+    display:block;
+    margin-top:8px;
+    font-size:0.68rem;
+    letter-spacing:0.2em;
+    color:var(--ink-soft);
+  }
+  .countdown-done{
+    display:none;
+    margin:14px 0 0;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:1.2rem;
+    color:var(--gold);
+  }
+
   .divider{
     display:flex;
     align-items:center;
@@ -246,6 +285,14 @@
     <h1 class="title">MAJORAT</h1>
     <p class="question">Daca ati intrat aici inseamna ca ati fost invitati la majoratul meu</p>
 
+    <div class="countdown" id="countdown" role="timer" aria-label="Timp ramas pana la petrecere">
+      <div class="unit"><span class="n" id="cd-days">00</span><span class="l">zile</span></div>
+      <div class="unit"><span class="n" id="cd-hours">00</span><span class="l">ore</span></div>
+      <div class="unit"><span class="n" id="cd-mins">00</span><span class="l">minute</span></div>
+      <div class="unit"><span class="n" id="cd-secs">00</span><span class="l">secunde</span></div>
+    </div>
+    <p class="countdown-done" id="cd-done">Incepe acum!</p>
+
     <div class="divider" aria-hidden="true"><span class="line"></span><span class="diamond"></span><span class="line"></span></div>
 
     <div class="rows">
@@ -268,7 +315,7 @@
       <div class="row">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="9"/><line x1="12" y1="12" x2="12" y2="7"/><line x1="12" y1="12" x2="15.5" y2="14"/></svg>
         <p class="label">Ora</p>
-        <p class="value tbd">TBD</p>
+        <p class="value tbd">19:00</p>
       </div>
 
       <div class="row tinuta">
@@ -285,6 +332,40 @@
 
   </div>
 </main>
+
+<script>
+  // 23 octombrie 2026, ora 19:00 (ora Romaniei, UTC+3) - la fel pentru toata lumea, indiferent de fusul orar
+  var target = new Date("2026-10-23T19:00:00+03:00").getTime();
+
+  var elDays  = document.getElementById("cd-days");
+  var elHours = document.getElementById("cd-hours");
+  var elMins  = document.getElementById("cd-mins");
+  var elSecs  = document.getElementById("cd-secs");
+  var elDone  = document.getElementById("cd-done");
+  var box     = document.getElementById("countdown");
+
+  function pad(n){ return String(n).padStart(2, "0"); }
+
+  function tick(){
+    var diff = target - Date.now();
+
+    if (diff <= 0){
+      elDays.textContent = elHours.textContent = elMins.textContent = elSecs.textContent = "00";
+      elDone.style.display = "block";
+      clearInterval(timer);
+      return;
+    }
+
+    var s = Math.floor(diff / 1000);
+    elDays.textContent  = pad(Math.floor(s / 86400));
+    elHours.textContent = pad(Math.floor((s % 86400) / 3600));
+    elMins.textContent  = pad(Math.floor((s % 3600) / 60));
+    elSecs.textContent  = pad(s % 60);
+  }
+
+  var timer = setInterval(tick, 1000);
+  tick();
+</script>
 
 </body>
 </html>
